@@ -1,4 +1,3 @@
-
 import json, gzip, unicodedata, re
 from pathlib import Path
 from fastapi import FastAPI, Query, HTTPException
@@ -9,15 +8,19 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"],
                    allow_methods=["*"], allow_headers=["*"])
 
 # Cargar datos (soporta .json y .json.gz)
-DATA_FILE = Path(__file__).parent / "frikiserie_full.json"
-DATA_GZ = Path(__file__).parent / "frikiserie_full.json.gz"
+DATA_FILE = Path(__file__).parent / "friks_full.json"
+DATA_GZ   = Path(__file__).parent / "friks_full.json.gz"
 
 if DATA_GZ.exists():
     with gzip.open(DATA_GZ, "rt", encoding="utf-8") as f:
         records = json.load(f)
-else:
+elif DATA_FILE.exists():
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         records = json.load(f)
+else:
+    raise FileNotFoundError(
+        f"No se encontró {DATA_GZ} ni {DATA_FILE} en {Path(__file__).parent}"
+    )
 
 print(f"[startup] Cargados {len(records)} registros")
 
